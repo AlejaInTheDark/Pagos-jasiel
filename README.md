@@ -1,1 +1,80 @@
 # Pagos-jasiel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagos JASIEL</title>
+  <script async
+    src="https://pay.google.com/gp/p/js/pay.js"
+    onload="onGooglePayLoaded()"></script>
+</head>
+<body>
+  <div class="head">
+    <div class="logo">
+      <a href="#">logo</a>
+    </div>
+    <div class="navbar">
+      <a href="#">Inicio</a>
+      <a href="#">google pay</a>
+    </div>
+  </div>
+
+  <!-- Contenedor para el botón -->
+  <div id="container"></div>
+
+  <script>
+    function onGooglePayLoaded() {
+      const paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+
+      const button = paymentsClient.createButton({
+        onClick: onGooglePayButtonClicked
+      });
+
+      document.getElementById('container').appendChild(button);
+    }
+
+    function onGooglePayButtonClicked() {
+      const paymentDataRequest = {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [{
+          type: 'CARD',
+          parameters: {
+            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+            allowedCardNetworks: ['VISA', 'MASTERCARD']
+          },
+          tokenizationSpecification: {
+            type: 'PAYMENT_GATEWAY',
+            parameters: {
+              gateway: 'example',
+              gatewayMerchantId: 'exampleMerchantId'
+            }
+          }
+        }],
+        merchantInfo: {
+          merchantId: '01234567890123456789',
+          merchantName: 'Ejemplo JASIEL'
+        },
+        transactionInfo: {
+          totalPriceStatus: 'FINAL',
+          totalPrice: '10.00',
+          currencyCode: 'USD',
+          countryCode: 'US'
+        }
+      };
+
+      const paymentsClient = new google.payments.api.PaymentsClient({ environment: 'TEST' });
+
+      paymentsClient.loadPaymentData(paymentDataRequest)
+        .then(paymentData => {
+          // Aquí procesarías el pago
+          console.log("Pago completado", paymentData);
+        })
+        .catch(err => {
+          console.error("Error al procesar el pago", err);
+        });
+    }
+  </script>
+</body>
+</html>
